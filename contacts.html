@@ -18,6 +18,7 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none;
         }
         h1, h2 {
             color: #2c3e50;
@@ -34,106 +35,111 @@
             padding-bottom: 10px;
             margin-bottom: 15px;
         }
+        .quick-links {
+            margin-bottom: 20px;
+            display: none; /* Hide quick links as we'll generate them from JS */
+        }
     </style>
 </head>
 <body>
     <h1>Organization Contacts</h1>
-    <div class="quick-links" style="margin-bottom: 20px;">
-        <p>Quick links: 
-            <a href="?org=tech-solutions">Tech Solutions Inc.</a> | 
-            <a href="?org=green-earth">Green Earth</a> | 
-            <a href="?org=global-finance">Global Finance</a> |
-            <a href="?org=creative-minds">Creative Minds</a> |
-            <a href="?org=urban-eats">Urban Eats</a> |
-            <a href="?">Show All</a>
-        </p>
-    </div>
-    
-    <!-- Tech Solutions Inc. -->
-    <div class="contact-section org-section" data-org="tech-solutions">
-        <h2 class="org-name">Tech Solutions Inc.</h2>
-        <div class="contact-info">
-            <p><strong>Address:</strong> 123 Tech Park, Silicon Valley, CA 94025</p>
-            <p><strong>Phone:</strong> (555) 123-4567</p>
-            <p><strong>Email:</strong> info@techsolutions.com</p>
-            <p><strong>Website:</strong> www.techsolutions.com</p>
-            <p><strong>Contact Person:</strong> Sarah Johnson (CTO)</p>
-        </div>
-    </div>
-
-    <!-- Green Earth Foundation -->
-    <div class="contact-section org-section" data-org="green-earth">
-        <h2 class="org-name">Green Earth Foundation</h2>
-        <div class="contact-info">
-            <p><strong>Address:</strong> 456 Eco Drive, Portland, OR 97201</p>
-            <p><strong>Phone:</strong> (503) 987-6543</p>
-            <p><strong>Email:</strong> contact@greenearth.org</p>
-            <p><strong>Website:</strong> www.greenearth.org</p>
-            <p><strong>Contact Person:</strong> Michael Chen (Director)</p>
-        </div>
-    </div>
-
-    <!-- Global Finance Group -->
-    <div class="contact-section org-section" data-org="global-finance">
-        <h2 class="org-name">Global Finance Group</h2>
-        <div class="contact-info">
-            <p><strong>Address:</strong> 789 Wall Street, New York, NY 10005</p>
-            <p><strong>Phone:</strong> (212) 555-7890</p>
-            <p><strong>Email:</strong> inquiries@gfg.com</p>
-            <p><strong>Website:</strong> www.globalfinance.com</p>
-            <p><strong>Contact Person:</strong> Robert Williams (Account Manager)</p>
-        </div>
-    </div>
-
-    <!-- Creative Minds Academy -->
-    <div class="contact-section org-section" data-org="creative-minds">
-        <h2 class="org-name">Creative Minds Academy</h2>
-        <div class="contact-info">
-            <p><strong>Address:</strong> 101 Education Blvd, Austin, TX 73301</p>
-            <p><strong>Phone:</strong> (512) 555-2468</p>
-            <p><strong>Email:</strong> admissions@creativeminds.edu</p>
-            <p><strong>Website:</strong> www.creativeminds.edu</p>
-            <p><strong>Contact Person:</strong> Dr. Emily Rodriguez (Principal)</p>
-        </div>
-    </div>
-
-    <!-- Urban Eats Restaurant Group -->
-    <div class="contact-section org-section" data-org="urban-eats">
-        <h2 class="org-name">Urban Eats Restaurant Group</h2>
-        <div class="contact-info">
-            <p><strong>Address:</strong> 321 Foodie Lane, Chicago, IL 60601</p>
-            <p><strong>Phone:</strong> (312) 555-1357</p>
-            <p><strong>Email:</strong> contact@urbaneats.com</p>
-            <p><strong>Website:</strong> www.urbaneats.com</p>
-            <p><strong>Contact Person:</strong> David Kim (Operations Manager)</p>
-        </div>
-    </div>
+    <div id="quickLinks" class="quick-links"></div>
+    <div id="content"></div>
 
     <script>
-        // Read the URL parameter
-        const params = new URLSearchParams(window.location.search);
-        const orgCode = params.get("org")?.toLowerCase();
-        const sections = document.querySelectorAll('.org-section');
-
-        if (!orgCode) {
-            document.body.innerHTML = "<h2>Access Denied</h2><p>You must access this page through a valid QR code or authorized link.</p>";
-        } else {
-            let matchFound = false;
-
-            sections.forEach(section => {
-                if (section.dataset.org.toLowerCase() === orgCode) {
-                    section.style.display = 'block';
-                    matchFound = true;
-                    document.title = section.querySelector('.org-name').textContent;
-                } else {
-                    section.style.display = 'none';
-                }
-            });
-
-            if (!matchFound) {
-                document.body.innerHTML = "<h2>Organization Not Found</h2><p>The requested organization could not be found. Please check the link or <a href='?'>try again</a>.</p>";
+        // Organization data - not directly visible in page source
+        const organizations = {
+            'tech-solutions': {
+                name: 'Tech Solutions Inc.',
+                address: '123 Tech Park, Silicon Valley, CA 94025',
+                phone: '(555) 123-4567',
+                email: 'info@techsolutions.com',
+                website: 'www.techsolutions.com',
+                contactPerson: 'Sarah Johnson (CTO)'
+            },
+            'green-earth': {
+                name: 'Green Earth Foundation',
+                address: '456 Eco Drive, Portland, OR 97201',
+                phone: '(503) 987-6543',
+                email: 'contact@greenearth.org',
+                website: 'www.greenearth.org',
+                contactPerson: 'Michael Chen (Director)'
+            },
+            'global-finance': {
+                name: 'Global Finance Group',
+                address: '789 Wall Street, New York, NY 10005',
+                phone: '(212) 555-7890',
+                email: 'inquiries@gfg.com',
+                website: 'www.globalfinance.com',
+                contactPerson: 'Robert Williams (Account Manager)'
+            },
+            'creative-minds': {
+                name: 'Creative Minds Academy',
+                address: '101 Education Blvd, Austin, TX 73301',
+                phone: '(512) 555-2468',
+                email: 'admissions@creativeminds.edu',
+                website: 'www.creativeminds.edu',
+                contactPerson: 'Dr. Emily Rodriguez (Principal)'
+            },
+            'urban-eats': {
+                name: 'Urban Eats Restaurant Group',
+                address: '321 Foodie Lane, Chicago, IL 60601',
+                phone: '(312) 555-1357',
+                email: 'contact@urbaneats.com',
+                website: 'www.urbaneats.com',
+                contactPerson: 'David Kim (Operations Manager)'
             }
+        };
+
+        // Function to render organization content
+        function renderOrganization(org) {
+            return `
+                <div class="contact-section">
+                    <h2 class="org-name">${org.name}</h2>
+                    <div class="contact-info">
+                        <p><strong>Address:</strong> ${org.address}</p>
+                        <p><strong>Phone:</strong> ${org.phone}</p>
+                        <p><strong>Email:</strong> ${org.email}</p>
+                        <p><strong>Website:</strong> ${org.website}</p>
+                        <p><strong>Contact Person:</strong> ${org.contactPerson}</p>
+                    </div>
+                </div>
+            `;
         }
+
+        // Function to render quick links
+        function renderQuickLinks() {
+            const quickLinks = Object.entries(organizations).map(([id, org]) => 
+                `<a href="?org=${id}">${org.name}</a>`
+            ).join(' | ');
+            
+            document.getElementById('quickLinks').innerHTML = `
+                <p>Quick links: ${quickLinks} | <a href="?">Show All</a></p>
+            `;
+            document.querySelector('.quick-links').style.display = 'block';
+        }
+
+        // Main execution
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const orgCode = params.get("org")?.toLowerCase();
+            const contentDiv = document.getElementById('content');
+
+            if (!orgCode) {
+                // Show all organizations
+                Object.entries(organizations).forEach(([id, org]) => {
+                    contentDiv.innerHTML += renderOrganization(org);
+                });
+                renderQuickLinks();
+            } else if (organizations[orgCode]) {
+                // Show specific organization
+                contentDiv.innerHTML = renderOrganization(organizations[orgCode]);
+                document.title = organizations[orgCode].name;
+            } else {
+                // Invalid organization code
+                contentDiv.innerHTML = "<h2>Organization Not Found</h2><p>The requested organization could not be found. Please check the link or <a href='?'>try again</a>.</p>";
+            }
+        });
     </script>
 </body>
 </html>
