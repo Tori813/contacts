@@ -18,7 +18,6 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            display: none;
         }
         h1, h2 {
             color: #2c3e50;
@@ -126,11 +125,7 @@
             const contentDiv = document.getElementById('content');
 
             if (!orgCode) {
-                // Show all organizations
-                Object.entries(organizations).forEach(([id, org]) => {
-                    contentDiv.innerHTML += renderOrganization(org);
-                });
-                renderQuickLinks();
+                contentDiv.innerHTML = "<h2>Access Denied</h2><p>You must access this page via an authorized link or QR code with a valid organization code.</p>";
             } else if (organizations[orgCode]) {
                 // Show specific organization
                 contentDiv.innerHTML = renderOrganization(organizations[orgCode]);
